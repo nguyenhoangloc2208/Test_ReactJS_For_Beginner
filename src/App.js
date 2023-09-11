@@ -7,8 +7,8 @@ import Container from 'react-bootstrap/Container';
 function App() {
   return (
     <div className='app-container'>
+      <Header/>
       <Container>
-        <Header/>
         <TableUsers/>
       </Container>
 
