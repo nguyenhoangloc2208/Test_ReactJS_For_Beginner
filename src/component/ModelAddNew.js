@@ -1,14 +1,31 @@
 import { useState } from 'react';
 import {Modal, Button, Form} from 'react-bootstrap';
+import {postCreateUser} from '../services/UserService'
+import { toast } from 'react-toastify'
 
 const ModalAddNew = (props) =>{
-    const {show, handleClose} = props;
-    const [Name, setName] = useState('');
-    const [Job, setJob] = useState('');
+    const {show, handleClose, handleUpdateTable} = props;
+    const [name, setName] = useState('');
+    const [job, setJob] = useState('');
 
-    const handleSaveUser = () =>{
-        console.log('check name>>>',Name);
-        console.log('check job>>>',Job)
+    const handleSaveUser = async () =>{
+        let res = await postCreateUser(name, job)
+        
+        if(res && res.name && res.job){
+            handleClose();
+            setName('');
+            setJob('');
+            //success
+            toast.success('A User is created succeed!')
+            handleUpdateTable({
+                first_name: name,
+                id: res.id
+            })
+        }else{
+            toast.error('An erorr...')
+            //erorr
+        }
+        console.log('check res:', res)
     }
 
     return(
@@ -24,13 +41,13 @@ const ModalAddNew = (props) =>{
                             <Form.Group className="mb-3">
                                 <Form.Label>Name</Form.Label>
                                 <Form.Control type="text" placeholder="Enter Name"
-                                 value={Name} onChange={(event)=>setName(event.target.value)}/>
+                                 value={name} onChange={(event)=>setName(event.target.value)}/>
                             </Form.Group>
 
                             <Form.Group className="mb-3">
                                 <Form.Label>Job</Form.Label>
                                 <Form.Control type="text" placeholder="Enter Job"
-                                 value={Job} onChange={(event)=>setJob(event.target.value)}/>
+                                 value={job} onChange={(event)=>setJob(event.target.value)}/>
                             </Form.Group>
                         </Form>
                         </div>

@@ -1,6 +1,7 @@
 import Table from 'react-bootstrap/Table';
 import { useEffect, useState } from 'react';
 import { fetchAllUser } from '../services/UserService';
+import ModalAddNew from './ModelAddNew'
 import ReactPaginate from 'react-paginate';
 
 const TableUsers = (props) => {
@@ -8,12 +9,21 @@ const TableUsers = (props) => {
     const [totalUsers, setTotalUsers] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
 
+    const [isShowModalAddNew, setIsShowModalAddNew] = useState(false);
+
+    const handleClose = () =>{
+        setIsShowModalAddNew(false)
+    }
+
+    const handleUpdateTable = (user) =>{
+        setListUsers([user,...listUsers])
+    }
+
     useEffect(()=> {
         getUsers(1);
     }, [])
 
     const handlePageClick = (event) =>{
-        console.log('>>>',event)
         getUsers(+event.selected + 1);
     }
 
@@ -24,9 +34,12 @@ const TableUsers = (props) => {
             setListUsers(res.data)
             setTotalPages(res.total_pages)
         }
-        console.log('check res>>>',res);
     }
     return (<>
+        <div className="my-3 add-new">
+            <span>ListUsers:</span>
+            <button className="btn btn-success" onClick={()=>setIsShowModalAddNew(true)}>Add New User</button>
+        </div>
         <Table striped bordered hover>
         <thead>
             <tr>
@@ -67,6 +80,12 @@ const TableUsers = (props) => {
             breakLinkClassName="page-link"
             containerClassName="pagination"
             activeClassName="active"
+        />
+
+        <ModalAddNew
+          show={isShowModalAddNew}
+          handleClose={handleClose}
+          handleUpdateTable={handleUpdateTable}
         />
     </>)
 }
