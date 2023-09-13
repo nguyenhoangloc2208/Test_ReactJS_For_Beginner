@@ -5,7 +5,7 @@ import ModalAddNew from './ModalAddNew'
 import ReactPaginate from 'react-paginate';
 import ModalEditUser from './ModalEditUser';
 import ModalDeleteUser from './ModalDeleteUser';
-import _, { clone } from 'lodash';
+import _, { clone, debounce } from 'lodash';
 import './TableUser.scss';
 
 const TableUsers = (props) => {
@@ -23,6 +23,8 @@ const TableUsers = (props) => {
 
     const [sortBy, setSortBy] = useState('asc');
     const [sortFeild, setSortFeild] = useState('id');
+
+    const [keyword, setKeyword] = useState('');
 
     const handleClose = () =>{
         setIsShowModalAddNew(false)
@@ -82,10 +84,26 @@ const TableUsers = (props) => {
         setListUsers(cloneListUsers);
     }
 
+    const handleSearch = debounce((event) =>{
+        let term = event.target.value;
+        if(term){
+            let cloneListUsers = _.cloneDeep(listUsers);
+            cloneListUsers = cloneListUsers.filter(item => item.email.includes(term));
+            setListUsers(cloneListUsers);
+        }else{
+            getUsers(1);
+        }
+    }, 300)
+
     return (<>
         <div className="my-3 add-new">
             <span>ListUsers:</span>
             <button className="btn btn-success" onClick={()=>setIsShowModalAddNew(true)}>Add New User</button>
+        </div>
+        <div className='col-4 my-3'>
+            <input className='form-control' placeholder='Search user by email...' 
+            // value={keyword}
+            onChange={(event) => handleSearch(event)}/>
         </div>
         <Table striped bordered hover>
         <thead>
@@ -101,7 +119,14 @@ const TableUsers = (props) => {
                     </span>
                 </div>        
             </th>
-            <th >Email</th>
+            <th >
+                <div className='sort-header'>
+                    <span>Email</span>
+                    <span>
+                        <i class="fa-solid fa-filter"></i> 
+                    </span>
+                </div>   
+            </th>
             <th>
                 <div className='sort-header'>
                     <span>First Name</span>
